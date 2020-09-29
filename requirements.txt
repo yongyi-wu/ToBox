@@ -1,0 +1,29 @@
+attrs==20.2.0
+backcall==0.2.0
+boxsdk==2.9.0
+certifi==2020.6.20
+chardet==3.0.4
+decorator==4.4.2
+idna==2.10
+ipykernel @ file:///tmp/build/80754af9/ipykernel_1596206598566/work/dist/ipykernel-5.3.4-py3-none-any.whl
+ipython @ file:///tmp/build/80754af9/ipython_1598883837425/work
+ipython-genutils==0.2.0
+jedi @ file:///tmp/build/80754af9/jedi_1596490743326/work
+jupyter-client @ file:///tmp/build/80754af9/jupyter_client_1594826976318/work
+jupyter-core==4.6.3
+parso==0.7.0
+pexpect @ file:///tmp/build/80754af9/pexpect_1594383317248/work
+pickleshare @ file:///tmp/build/80754af9/pickleshare_1594384075987/work
+prompt-toolkit @ file:///tmp/build/80754af9/prompt-toolkit_1598885458782/work
+ptyprocess==0.6.0
+Pygments @ file:///tmp/build/80754af9/pygments_1600458456400/work
+python-dateutil==2.8.1
+pyzmq==19.0.2
+requests==2.24.0
+requests-toolbelt==0.9.1
+six==1.15.0
+tornado==6.0.4
+traitlets @ file:///tmp/build/80754af9/traitlets_1600712679583/work
+urllib3==1.25.10
+wcwidth @ file:///tmp/build/80754af9/wcwidth_1593447189090/work
+wrapt==1.12.1
