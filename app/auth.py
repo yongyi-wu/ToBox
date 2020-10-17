@@ -2,13 +2,15 @@
 
 import boxsdk
 
-
-def authenticate(box_id, box_secret, dev_token): 
+def authenticate(identifier, secret, token): 
+    '''identifier: client_id, provided in config.py
+    secret: client_secret, provided in config.py
+    token: developer token, accessed from box developer console
+    '''
     oauth = boxsdk.OAuth2(
-        client_id=box_id, 
-        client_secret=box_secret, 
-        access_token=dev_token
+        client_id=identifier, 
+        client_secret=secret, 
+        access_token=token
     )
     client = boxsdk.Client(oauth)
-    print('The current user ID is {0}'.format(client.user().get().id))
     return client

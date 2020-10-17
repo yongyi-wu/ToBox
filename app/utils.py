@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import pprint
 
 import boxsdk
 
@@ -14,7 +15,9 @@ def match_by_name(folder, name):
 
 
 def get_item(client, working_dir, locator, kind): 
-    '''locator: id or path to find the item
+    '''client: return value from successful authentication
+    working_dir: folder to start (relative) searching
+    locator: id or path to find the item
     kind: file_id, dir_id, path
     '''
     if kind == 'file_id': 
@@ -53,7 +56,6 @@ def make_if_nonexist_remote(folder, name):
     return subfolder
 
 
-
 def make_if_nonexist_local(folder, name): 
     '''folder: the path (string) to an existing local folder
     name: the name (string) of subfolder to check
@@ -64,3 +66,22 @@ def make_if_nonexist_local(folder, name):
         os.mkdir(path)
         print('New directory created: {}'.format(path))
     return path
+
+
+def list_folder_remote(folder, recurse=-1): 
+    '''folder: a folder (boxsdk.object.folder.Folder) to inspect its content
+    recurse: -1 nonrecursive, 0 recursive
+    '''
+    # TODO: make the display nicer
+    if not isinstance(folder, boxsdk.object.folder.Folder): 
+        raise ValueError('Invalid input')
+    if recurse == -1: 
+        # non-recursive case
+        pprint.pprint(folder.get()['item_collection']['entries'])
+    else: 
+        # recursive case
+        items = folder.get()['item_collection']['entries']
+        pprint.PrettyPrinter(indent=recurse).pprint(items)
+        subfolders = [item for item in items if isinstance(item, boxsdk.object.folder.Folder)]
+        for subfolder in subfolders: 
+            list_folder_remote(subfolder, recurse+1)
