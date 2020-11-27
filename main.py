@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import argparse
+import os
 
 import app
-from config import client_id, client_secret
 
 
 def scheduler(client, working_dir, command, params): 
@@ -37,28 +36,27 @@ def scheduler(client, working_dir, command, params):
             recurse = -1
         app.list_folder_remote(folder, recurse)
     elif command == 'upload': 
-        if params.dst == '.': 
-            dst = working_dir
-        else: 
-            dst = get_item_helper(params.dst, 'folder')
+        srcs = [os.path.expanduser(src) for src in params.src]
+        dst = get_item_helper(params.dst, 'folder')
         if not params.folder: 
-            app.upload_files(params.srcs, dst)
+            app.upload_files(srcs, dst)
         else: 
-            app.upload_folders(params.srcs, dst)
+            app.upload_folders(srcs, dst)
     elif command == 'download': 
         srcs = []
+        dst = os.path.expanduser(params.dst)
         if not params.folder: 
             for src in params.src: 
                 srcs.append(get_item_helper(src, 'file'))
-            app.download_files(srcs, params.dst)
+            app.download_files(srcs, dst)
         else: 
             for src in params.src: 
                 srcs.append(get_item_helper(src, 'folder'))
-            app.download_folders(srcs, params.dst)
+            app.download_folders(srcs, dst)
     return working_dir
 
 
-def main(client_token): 
+def ToBox(client_id, client_secret, client_token): 
     print('''\
 ##########################################################
 #####  Welcome to the ToBox toolbox for HoltLab@CMU  #####
@@ -67,10 +65,14 @@ def main(client_token):
     commands = set(['quit', 'help', 'cd', 'ls', 'upload', 'download'])
     print('Authenticating', end='...')
     client = app.authenticate(client_id, client_secret, client_token)
-    print('Done')
+    try: 
+        print('Done! {}'.format(client.user().get()))
+    except: 
+        print('Fail! Incorrect token(s)')
+        return
     working_dir = client.folder(folder_id='0')
     while True: 
-        cmd = input('>>> ')
+        cmd = input('\n>>> ')
         try: 
             (command, params) = app.parse(commands, cmd)
             if command == 'quit': 
@@ -80,12 +82,7 @@ def main(client_token):
                 print('Currently supported commands: {}.\nFor specific instruction, try: <command> --help'.format(commands))
             else: 
                 working_dir = scheduler(client, working_dir, command, params)  
-        except: 
-            continue 
-
-
-if __name__ == '__main__': 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('client_token', type=str, help='Please refer to help/get_tokens.pdf for instructions')
-    args = parser.parse_args()
-    main(args.client_token)
+        except Exception as e: 
+            print(e)
+        except SystemExit: 
+            pass

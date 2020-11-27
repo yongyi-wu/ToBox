@@ -26,8 +26,8 @@ def upload_files(srcs, dst):
             else: 
                 dst.upload(src)
             print('Done')
-        except: 
-            print('Fails!')
+        except Exception as e: 
+            print(e)
 
 
 def upload_folders(srcs, dst): 
@@ -68,8 +68,8 @@ def download_files(srcs, dst):
                 content = src.content()
                 f.write(content)
             print('Done')
-        except: 
-            print('Fails!')
+        except Exception as e: 
+            print(e)
 
 
 def download_folders(srcs, dst): 

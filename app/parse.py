@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import argparse
 
 
@@ -42,15 +43,15 @@ def parse_tokens(tokens):
         parser.add_argument('dst', type=str, help='path of the new working directory')
     elif command == 'ls': 
         parser.add_argument('--dst', type=str, help='folder to inspect content')
-        parser.add_argument('-r', action='store_true', default=False, help='whether to recursively ls subfolders')
+        parser.add_argument('-r', action='store_true', default=False, help='recursively ls subfolders')
     elif command in ['upload', 'download']: 
-        parser.add_argument('--file', action='store_true', default=True, help='indicate to upload files (default)')
-        parser.add_argument('--folder', action='store_true', help='indicate to upload folder')
+        parser.add_argument('--file', action='store_true', default=True, help='upload/download files (default)')
+        parser.add_argument('--folder', action='store_true', help='upload/download folders')
         if command == 'upload': 
             parser.add_argument('src', type=str, nargs='+', help='source path on local machine to upload from')
-            parser.add_argument('dst', type=str, help='remote folder id or path to upload to')
+            parser.add_argument('dst', type=str, help='remote folder id(s) or path(s) to upload to')
         elif command == 'download': 
-            parser.add_argument('src', type=str, nargs='+', help='remote id or path to download from')
+            parser.add_argument('src', type=str, nargs='+', help='remote id(s) or path(s) to download from')
             parser.add_argument('dst', type=str, help='destination path on local machine to download to')
     params = parser.parse_args(tokens[1:])
     return (command, params)
@@ -58,8 +59,7 @@ def parse_tokens(tokens):
 
 def parse(commands, cmd): 
     tokens = tokenize(commands, cmd)
-    params = parse_tokens(tokens)
-    return params
+    return parse_tokens(tokens)
 
 
 if __name__ == '__main__': 

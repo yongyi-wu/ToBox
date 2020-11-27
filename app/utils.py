@@ -20,29 +20,31 @@ def get_item(client, working_dir, locator, kind):
     locator: id or path to find the item
     kind: file_id, dir_id, path
     '''
-    if kind == 'file_id': 
-        try: 
+    try: 
+        if kind == 'file_id': 
             return client.file(file_id=locator).get()
-        except: 
-            raise ValueError('Invalid file id')
-    elif kind == 'dir_id': 
-        try: 
+        elif kind == 'dir_id': 
             return client.folder(folder_id=locator).get()
-        except: 
-            raise ValueError('Invalid folder id')
-    elif kind == 'path': 
-        locator = os.path.normpath(locator)
-        tokens = locator.split(os.sep)
-        if len(tokens) == 0: 
-            raise ValueError('Invalid path')
-        item = working_dir
-        for name in tokens: 
-            item = match_by_name(item, name)
-            if item is None: 
-                raise ValueError('Nonexist item: {}'.format(name))
-        return item.get()
-    else: 
-        raise ValueError('Item id or path is required')
+        elif kind == 'path': 
+            locator = os.path.normpath(locator)
+            tokens = locator.split(os.sep)
+            if len(tokens) == 0: 
+                raise ValueError('Invalid path')
+            item = working_dir
+            for name in tokens: 
+                if item is None: 
+                    raise ValueError('Nonexist item: {}'.format(name))
+                if name =='~': 
+                    item = get_item(client, working_dir, '0', 'dir_id')
+                elif name == '.': 
+                    item = item
+                elif name == '..': 
+                    item = get_item(client, working_dir, item.get()['parent']['id'], 'dir_id')
+                else: 
+                    item = match_by_name(item, name)
+            return item.get()
+    except: 
+        raise ValueError('Invalid path or id')
 
 
 def make_if_nonexist_remote(folder, name): 
@@ -72,16 +74,22 @@ def list_folder_remote(folder, recurse=-1):
     '''folder: a folder (boxsdk.object.folder.Folder) to inspect its content
     recurse: -1 nonrecursive, 0 recursive
     '''
-    # TODO: make the display nicer
     if not isinstance(folder, boxsdk.object.folder.Folder): 
         raise ValueError('Invalid input')
+    items = folder.get()['item_collection']['entries']
+    r = max(0, recurse)
     if recurse == -1: 
         # non-recursive case
-        pprint.pprint(folder.get()['item_collection']['entries'])
+        for item in items: 
+            print('{}|{}'.format('    ' * r, item['name']))
     else: 
         # recursive case
-        items = folder.get()['item_collection']['entries']
-        pprint.PrettyPrinter(indent=recurse).pprint(items)
-        subfolders = [item for item in items if isinstance(item, boxsdk.object.folder.Folder)]
+        subfolders = []
+        for item in items: 
+            if isinstance(item, boxsdk.object.folder.Folder): 
+                subfolders.append(item)
+            else: 
+                print('{}|{}'.format('    ' * r, item['name']))
         for subfolder in subfolders: 
+            print('{}|{}'.format('    ' * r, subfolder['name']))
             list_folder_remote(subfolder, recurse+1)
