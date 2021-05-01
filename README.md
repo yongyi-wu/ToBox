@@ -80,6 +80,6 @@ To view available arguments and explanation, you can type in
 
 Please do not hesitate to contact me if you encounter any bugs or difficulties while using this program. Your feedback is greatly appreciated. 
 
-Author: Ethan Wu
+Author: Yongyi (Ethan) Wu
 
-Email: yongyiw@andrew.cmu.edu
+Email: wyy@cmu.edu
